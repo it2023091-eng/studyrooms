@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="el">
+<head>
+    <meta charset="UTF-8">
+    <title>StudyRooms - Λίστα Δωματίων</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333333;
+        }
+        table {
+            border-collapse: collapse;
+            width: 60%;
+            background-color: white;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #1976d2;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f0f0f0;
+        }
+        .available {
+            color: green;
+            font-weight: bold;
+        }
+        .not-available {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Διαθέσιμα Δωμάτια Μελέτης</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Όνομα</th>
+        <th>Χωρητικότητα</th>
+        <th>Διαθεσιμότητα</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="room : ${rooms}">
+        <td th:text="${room.id}">1</td>
+        <td th:text="${room.name}">Room A1</td>
+        <td th:text="${room.capacity}">4</td>
+        <td>
+            <span th:if="${room.available}" class="available">Διαθέσιμο</span>
+            <span th:if="${!room.available}" class="not-available">Μη διαθέσιμο</span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<p th:if="${#lists.isEmpty(rooms)}">
+    Δεν υπάρχουν καταχωρημένα δωμάτια.
+</p>
+
+</body>
+</html>
