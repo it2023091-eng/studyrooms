@@ -1,11 +1,11 @@
-
-
 package gr.hua.dit.studyrooms.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -13,21 +13,32 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**")) // επιτρέπει το h2 console
-                .headers(headers -> headers.frameOptions(frame -> frame.disable())) // επιτρέπει iframes
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"))
+                .headers(h -> h.frameOptions(f -> f.disable()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/h2-console/**").permitAll() // πρόσβαση στο h2 console
-                        .requestMatchers("/api/**").permitAll()        // πρόσβαση στα API
+                        .requestMatchers("/", "/rooms", "/register", "/login", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/my-bookings", "/rooms/*/book").authenticated()
+                        .requestMatchers("/api/**").permitAll() // προς το παρόν ανοιχτό
                         .anyRequest().permitAll()
                 )
-                .formLogin(form -> form.disable())
-                .httpBasic(basic -> basic.disable());
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/rooms", true)
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/rooms")
+                );
 
         return http.build();
     }
 }
-
-
-
