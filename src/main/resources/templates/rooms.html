@@ -1,9 +1,9 @@
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="el">
 <head>
     <meta charset="UTF-8">
     <title>StudyRooms - Λίστα Δωματίων</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,6 +17,7 @@
             border-collapse: collapse;
             width: 60%;
             background-color: white;
+            margin-top: 1rem;
         }
         th, td {
             border: 1px solid #dddddd;
@@ -38,9 +39,30 @@
             color: red;
             font-weight: bold;
         }
+        .top-bar {
+            margin-bottom: 1rem;
+        }
+        .top-bar a, .top-bar form {
+            display: inline-block;
+            margin-right: 1rem;
+        }
     </style>
 </head>
+
 <body>
+
+<!-- 🔝 Top navigation -->
+<div class="top-bar">
+
+    <a href="/login">Login</a>
+    <a href="/register">Register</a>
+
+    <!-- Logout MUST be POST -->
+    <form th:action="@{/logout}" method="post" style="display:inline;">
+        <button type="submit">Logout</button>
+    </form>
+
+</div>
 
 <h1>Διαθέσιμα Δωμάτια Μελέτης</h1>
 

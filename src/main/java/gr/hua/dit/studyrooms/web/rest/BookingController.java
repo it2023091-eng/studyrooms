@@ -34,11 +34,20 @@ public class BookingController {
         }
         return ResponseEntity.ok(booking);
     }
-
+/*
     @PostMapping
     public ResponseEntity<Booking> createBooking(@RequestBody Booking booking) {
         return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.createBooking(booking));
+    }*/
+
+    @PostMapping
+    public ResponseEntity<Booking> createBooking(@RequestBody gr.hua.dit.studyrooms.web.rest.model.BookingCreateRequest req) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.createBooking(req));
     }
+
+
+
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBooking(@PathVariable Long id) {

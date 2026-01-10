@@ -1,0 +1,65 @@
+package gr.hua.dit.studyrooms.core.security;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.Date;
+
+@Service
+public class JwtService {
+
+    private final Key key;
+    private final String issuer;
+    private final String audience;
+    private final long ttlMinutes;
+
+    public JwtService(
+            @Value("${jwt.secret}") final String secret,
+            @Value("${jwt.issuer}") final String issuer,
+            @Value("${jwt.audience}") final String audience,
+            @Value("${jwt.ttl-minutes}") final long ttlMinutes
+    ) {
+        if (secret == null || secret.isBlank()) throw new IllegalArgumentException("jwt.secret is blank");
+        if (issuer == null || issuer.isBlank()) throw new IllegalArgumentException("jwt.issuer is blank");
+        if (audience == null || audience.isBlank()) throw new IllegalArgumentException("jwt.audience is blank");
+        if (ttlMinutes <= 0) throw new IllegalArgumentException("jwt.ttl-minutes must be > 0");
+
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        this.issuer = issuer;
+        this.audience = audience;
+        this.ttlMinutes = ttlMinutes;
+    }
+
+    public String issue(final String subject, final Collection<String> roles) {
+        final Instant now = Instant.now();
+        return Jwts.builder()
+                .subject(subject)
+                .issuer(this.issuer)
+                .setAudience(this.audience)
+                .claim("roles", roles)
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(now.plus(Duration.ofMinutes(this.ttlMinutes))))
+                .signWith(this.key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public Claims parse(final String token) {
+        return Jwts.parser()
+                .requireAudience(this.audience)
+                .requireIssuer(this.issuer)
+                .setSigningKey(this.key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+}
