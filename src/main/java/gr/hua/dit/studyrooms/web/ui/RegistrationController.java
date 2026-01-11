@@ -1,6 +1,5 @@
 package gr.hua.dit.studyrooms.web.ui;
 
-
 import gr.hua.dit.studyrooms.core.model.User;
 import gr.hua.dit.studyrooms.core.model.UserRole;
 import gr.hua.dit.studyrooms.core.repository.UserRepository;
