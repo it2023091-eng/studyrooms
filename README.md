@@ -27,7 +27,9 @@ mvn spring-boot:run
 
 ## Βασικές Σελιδες
 Προβολή δωματίων: http://localhost:8080/rooms
+
 Σελίδα σύνδεσης: http://localhost:8080/login
+
 Σελίδα εγγραφής: http://localhost:8080/register
 
 ## Swagger
