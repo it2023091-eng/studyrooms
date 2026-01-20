@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="el">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking</title>
+    <style>
+        .day { border: 1px solid #ddd; border-radius: 10px; padding: 12px; margin: 12px 0; }
+        .slots { display: flex; flex-wrap: wrap; gap: 10px; }
+        .slot { border: 1px solid #ccc; border-radius: 8px; padding: 6px 10px; }
+        .error { color: red; }
+        .hint { color: #555; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+<h2 th:text="'Κράτηση: ' + ${room.name}">Κράτηση</h2>
+
+<div th:if="${error}" class="error">
+    <p th:text="${error}">Error</p>
+</div>
+
+<form th:action="@{/rooms/{id}/book(id=${room.id})}" method="post">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+    <p><b>Διαθεσιμότητα (Ημερολόγιο)</b></p>
+    <p class="hint">Επιλέξτε ένα διαθέσιμο χρονικό slot. Κάθε κράτηση έχει διάρκεια 1 ώρα.</p>
+
+    <div th:if="${calendar == null || #maps.isEmpty(calendar)}">
+        <p>Δεν υπάρχουν διαθέσιμα slots για τις επόμενες ημέρες.</p>
+    </div>
+
+    <div th:if="${calendar != null && !#maps.isEmpty(calendar)}">
+        <div th:each="entry : ${calendar}" class="day">
+            <h3 th:text="${#temporals.format(entry.key, 'EEEE dd/MM/yyyy')}">Ημέρα</h3>
+
+            <div class="slots">
+                <label th:each="slot : ${entry.value}" class="slot">
+                    <!-- ✅ slot είναι SlotAvailability, άρα η ώρα είναι slot.start -->
+                    <input type="radio" name="start" th:value="${slot.start}" required>
+
+                    <span th:text="${#temporals.format(slot.start, 'HH:mm')}">10:00</span>
+                    <span>–</span>
+                    <span th:text="${#temporals.format(slot.start.plusHours(1), 'HH:mm')}">11:00</span>
+
+                    <!-- ✅ δείξε διαθέσιμες θέσεις -->
+                    <span th:text="' (' + ${slot.freeSeats} + '/' + ${room.capacity} + ' διαθέσιμες)'"></span>
+                </label>
+            </div>
+        </div>
+
+        <button type="submit">Create booking</button>
+    </div>
+
+</form>
+
+<p><a href="/rooms">← Back to rooms</a></p>
+
+</body>
+</html>

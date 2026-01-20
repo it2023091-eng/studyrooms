@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+      lang="el">
+<head>
+    <meta charset="UTF-8">
+    <title>StudyRooms - Λίστα Δωματίων</title>
+
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; background-color: #f5f5f5; }
+        h1 { color: #333333; font-size: 3rem; margin-top: 1rem; }
+        table { border-collapse: collapse; width: 85%; background-color: white; margin-top: 1.5rem; }
+        th, td { border: 1px solid #dddddd; padding: 12px 14px; text-align: left; font-size: 1.1rem; }
+        th { background-color: #1976d2; color: white; font-size: 1.2rem; }
+        tr:nth-child(even) { background-color: #f0f0f0; }
+
+        .available { color: green; font-weight: bold; }
+        .not-available { color: red; font-weight: bold; }
+
+        .top-bar { margin-bottom: 1rem; }
+        .top-bar a, .top-bar form { display: inline-block; margin-right: 1rem; }
+        .badge { padding: 4px 10px; border-radius: 14px; background: #eee; font-size: 0.95rem; }
+        .btn { padding: 6px 10px; }
+        .warn { color: red; font-weight: bold; margin-top: 1rem; }
+    </style>
+</head>
+
+<body>
+
+<!-- 🔝 Top navigation -->
+<div class="top-bar">
+
+    <!-- ✅ Guest -->
+    <span sec:authorize="isAnonymous()">
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+        <span class="badge">Guest</span>
+    </span>
+
+    <!-- ✅ Logged in -->
+    <span sec:authorize="isAuthenticated()">
+
+        <!-- ✅ Student -->
+        <span sec:authorize="!hasRole('STAFF')">
+            <a href="/my-bookings">My bookings</a>
+            <span class="badge">Student</span>
+        </span>
+
+        <!-- ✅ Staff -->
+        <span sec:authorize="hasRole('STAFF')">
+            <a href="/staff/rooms">Staff: Manage rooms</a>
+            <span class="badge">Staff</span>
+        </span>
+
+        <!-- Logout MUST be POST -->
+        <form th:action="@{/logout}" method="post" style="display:inline;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button class="btn" type="submit">Logout</button>
+        </form>
+
+    </span>
+
+</div>
+
+<div th:if="${param.forbidden}" class="warn">
+    Δεν έχετε δικαίωμα για αυτή την ενέργεια.
+</div>
+
+<h1>Διαθέσιμα Δωμάτια Μελέτης</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th style="width: 8%;">ID</th>
+        <th style="width: 30%;">Όνομα</th>
+        <th style="width: 18%;">Χωρητικότητα</th>
+        <th style="width: 18%;">Διαθεσιμότητα</th>
+
+        <!-- ✅ ΝΕΑ ΣΤΗΛΗ: Θέσεις -->
+        <th style="width: 18%;">Θέσεις (επόμενο slot)</th>
+
+        <!-- ✅ Ενέργεια μόνο σε logged in -->
+        <th style="width: 12%;" sec:authorize="isAuthenticated()">Ενέργεια</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="room : ${rooms}">
+        <td th:text="${room.id}">1</td>
+        <td th:text="${room.name}">Room A1</td>
+        <td th:text="${room.capacity}">4</td>
+
+        <td>
+            <span th:if="${room.available}" class="available">Διαθέσιμο</span>
+            <span th:if="${!room.available}" class="not-available">Μη διαθέσιμο</span>
+        </td>
+
+        <!-- ✅ ΕΔΩ επιτέλους εμφανίζεις τις θέσεις -->
+        <td th:text="${nextFreeLabel[room.id]}">-</td>
+
+        <!-- ✅ Actions column only for logged in -->
+        <td sec:authorize="isAuthenticated()">
+
+            <!-- ✅ Student: logged in AND not staff -->
+            <span sec:authorize="!hasRole('STAFF')">
+                <a th:if="${room.available}"
+                   th:href="@{/rooms/{id}/book(id=${room.id})}">
+                    Book
+                </a>
+                <span th:if="${!room.available}">-</span>
+            </span>
+
+            <!-- ✅ Staff -->
+            <span sec:authorize="hasRole('STAFF')">
+                <em>Staff view</em>
+            </span>
+
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<p th:if="${#lists.isEmpty(rooms)}">
+    Δεν υπάρχουν καταχωρημένα δωμάτια.
+</p>
+
+</body>
+</html>

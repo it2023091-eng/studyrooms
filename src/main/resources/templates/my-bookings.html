@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="el">
+<head>
+    <meta charset="UTF-8">
+    <title>My bookings</title>
+</head>
+<body>
+
+<h2>My bookings</h2>
+
+<div th:if="${param.success}" style="color:green;">Booking created.</div>
+<div th:if="${param.canceled}" style="color:green;">Booking canceled.</div>
+<div th:if="${param.forbidden}" style="color:red;">Not allowed.</div>
+
+<table border="1" cellpadding="6">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Room</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="b : ${bookings}">
+        <td th:text="${b.id}">1</td>
+        <td th:text="${b.studyRoom.name}">Room A</td>
+        <td th:text="${b.startTime}">2026-01-18T16:00</td>
+        <td th:text="${b.endTime}">2026-01-18T17:00</td>
+        <td>
+            <form th:action="@{/bookings/{id}/cancel(id=${b.id})}" method="post">
+
+                <!-- ✅ CSRF token για να μη βγάζει 403 -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                <button type="submit">Cancel</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<p><a href="/rooms">← Back to rooms</a></p>
+
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - StudyRooms</title>
+</head>
+<body style="font-family: Arial; margin: 2rem;">
+<h2>Create account</h2>
+
+<form th:action="@{/register}" th:object="${form}" method="post">
+    <div style="margin-bottom: 1rem;">
+        <label>Email</label><br/>
+        <input type="email" th:field="*{email}" required />
+        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color:red;"></div>
+        <div th:if="${emailError != null}" th:text="${emailError}" style="color:red;"></div>
+    </div>
+
+    <div style="margin-bottom: 1rem;">
+        <label>Password</label><br/>
+        <input type="password" th:field="*{password}" required />
+        <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" style="color:red;"></div>
+    </div>
+
+    <div style="margin-bottom: 1rem;">
+        <label>Role</label><br/>
+        <select th:field="*{role}">
+            <option value="STUDENT">STUDENT</option>
+            <option value="STAFF">STAFF</option>
+        </select>
+    </div>
+
+    <button type="submit">Register</button>
+</form>
+
+<p style="margin-top: 1rem;">
+    <a href="/login">Back to login</a> | <a href="/rooms">Rooms</a>
+</p>
+</body>
+</html>
