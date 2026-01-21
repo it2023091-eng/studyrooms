@@ -29,13 +29,11 @@ mvn spring-boot:run
 Σελίδα σύνδεσης: http://localhost:8080/login
 
 Σελίδα εγγραφής: http://localhost:8080/register
-Swagger
 
-http://localhost:8080/swagger-ui/index.html
+Swagger : http://localhost:8080/swagger-ui/index.html
 
 ## Βάση Δεδομένων
 
 Βάση Δεδομένων Η2
 
-## Τερματισμος
-Ctrl +C
+
