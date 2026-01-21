@@ -12,7 +12,7 @@
 
 ## Εγκατάσταση
 
-git clone https://github.com/notaleisterJAVA/studyrooms.git
+git clone https://github.com//it2023091-eng/studyrooms.git
 
 ## Μεταγλώττιση
 
